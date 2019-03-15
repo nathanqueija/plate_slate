@@ -1,10 +1,10 @@
-# README Boilerplate
+# GraphQL server
 
 A GraphQL server built with Elixir, Phoenix and Absinthe
 
 ## Table of Contents
 
-- [README Boilerplate](#readme-boilerplate)
+- [GraphQL server](#graphql-server)
   - [Table of Contents](#table-of-contents)
   - [Roadmap](#roadmap)
   - [Installation](#installation)
