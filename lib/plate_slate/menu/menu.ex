@@ -121,13 +121,19 @@ defmodule PlateSlate.Menu do
       [%Item{}, ...]
 
   """
-  def list_items(%{matching: name}) when is_binary(name) do
-    Item
-    |> where([t], ilike(t.name, ^"%#{name}%"))
+  def list_items(filters) do
+    inspect(filters)
+
+    filters
+    |> Enum.reduce(Item, fn
+      {_, nil}, query -> query
+      {:order, order}, query -> from(q in query, order_by: {^order, :name})
+      {:matching, name}, query -> from(q in query, where: ilike(q.name, ^"%#{name}%"))
+    end)
     |> Repo.all()
   end
 
-  def list_items(_) do
+  def list_items() do
     Repo.all(Item)
   end
 
