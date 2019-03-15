@@ -4,7 +4,7 @@ A GraphQL server built with Elixir, Phoenix and Absinthe
 
 ## Table of Contents
 
-- [GraphQL server](#graphql-server)
+- GraphQL server
   - [Table of Contents](#table-of-contents)
   - [Roadmap](#roadmap)
   - [Installation](#installation)
