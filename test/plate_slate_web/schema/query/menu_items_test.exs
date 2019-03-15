@@ -29,6 +29,15 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
   }
   """
 
+  @query_with_vars """
+  query MenuItems($value: String){
+    menuItems(matching: $value){
+      name
+    }
+  }
+
+  """
+
   @query_invalid """
   {
     menuItems(matching: 123) {
@@ -79,8 +88,6 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
   test "menuItems field returns error when submitting invalid parameters" do
     response = get(build_conn(), "/api", query: @query_invalid)
 
-    inspect(response)
-
     assert %{
              "errors" => [
                %{"message" => message}
@@ -88,5 +95,21 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
            } = json_response(response, 200)
 
     assert message == "Argument \"matching\" has invalid value 123."
+  end
+
+  test "menuItems field returns error when providing variable" do
+    variables = %{
+      "value" => "eub"
+    }
+
+    response = get(build_conn(), "/api", query: @query_with_params, variables: variables)
+
+    assert json_response(response, 200) == %{
+             "data" => %{
+               "menuItems" => [
+                 %{"name" => "Reuben"}
+               ]
+             }
+           }
   end
 end
