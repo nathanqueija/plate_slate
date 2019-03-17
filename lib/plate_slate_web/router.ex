@@ -28,7 +28,8 @@ defmodule PlateSlateWeb.Router do
 
     forward("/graphiql", Absinthe.Plug.GraphiQL,
       schema: PlateSlateWeb.Schema,
-      interface: :playground
+      interface: :playground,
+      socket: PlateSlateWeb.UserSocket
     )
   end
 end
