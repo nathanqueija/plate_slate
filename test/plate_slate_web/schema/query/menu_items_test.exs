@@ -9,8 +9,20 @@
 defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
   use PlateSlateWeb.ConnCase, async: true
 
+  alias PlateSlate.{Repo, Menu}
+
+  import Ecto.Query
+
   setup do
     PlateSlate.Seeds.run()
+
+    category_id =
+      from(t in Menu.Category, where: t.name == "Sandwiches")
+      |> Repo.one!()
+      |> Map.fetch!(:id)
+      |> to_string
+
+    {:ok, category_id: category_id}
   end
 
   @query """
@@ -61,6 +73,35 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
   query MenuItems($filter: MenuItemFilter!){
     menuItems(filter: $filter) {
       name
+    }
+  }
+  """
+
+  @query_search """
+  query Search($term: String!){
+    search(matching: $term){
+      ... on MenuItem{name}
+      ... on Category {name}
+      __typename
+    }
+  }
+  """
+
+  @query_search_interface """
+  query Search($term: String!){
+    search(matching: $term){
+     name
+      __typename
+    }
+  }
+  """
+
+  @mutation """
+  mutation($menuItem: MenuItemInput!){
+    createMenuItem(input: $menuItem){
+      name
+      description
+      price
     }
   }
   """
@@ -128,7 +169,7 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
     assert json_response(response, 200) == %{
              "data" => %{
                "menuItems" => [
-                 %{"name" => "Reuben", "addedOn" => "2019-03-15"}
+                 %{"name" => "Reuben", "addedOn" => "2019-03-16"}
                ]
              }
            }
@@ -191,5 +232,36 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
                ]
              }
            } == json_response(response, 200)
+  end
+
+  test "search returns a list of menu items and categories" do
+    variables = %{term: "e"}
+    response = get(build_conn(), "/api", query: @query_search_interface, variables: variables)
+    assert %{"data" => %{"search" => results}} = json_response(response, 200)
+    assert length(results) > 0
+    assert Enum.find(results, &(&1["__typename"] == "Category"))
+    assert Enum.find(results, &(&1["__typename"] == "MenuItem"))
+  end
+
+  test "createMenuItem mutation creates an item", %{category_id: category_id} do
+    menu_item = %{
+      "name" => "French Dip",
+      "description" => "Roast beef, caramelized onions...",
+      "price" => "5.75",
+      "categoryId" => category_id
+    }
+
+    conn = build_conn()
+    conn = post(conn, "/api", query: @mutation, variables: %{"menuItem" => menu_item})
+
+    assert json_response(conn, 200) == %{
+             "data" => %{
+               "createMenuItem" => %{
+                 "name" => menu_item["name"],
+                 "description" => menu_item["description"],
+                 "price" => menu_item["price"]
+               }
+             }
+           }
   end
 end
