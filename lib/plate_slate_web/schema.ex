@@ -4,6 +4,7 @@ defmodule PlateSlateWeb.Schema do
   alias PlateSlateWeb.Schema.Middleware
   import_types(__MODULE__.MenuTypes)
   import_types(__MODULE__.OrderingTypes)
+  import_types(__MODULE__.AccountsTypes)
 
   enum :sort_order do
     value(:asc)
@@ -12,6 +13,13 @@ defmodule PlateSlateWeb.Schema do
 
   def middleware(middleware, _field, %{identifier: :mutation}) do
     middleware ++ [Middleware.ChangesetErrors]
+  end
+
+  def middleware(middleware, field, %{identifier: :allergy_info} = object) do
+    new_middleware = {Absinthe.Middleware.MapGet, to_string(field.identifier)}
+
+    middleware
+    |> Absinthe.Schema.replace_default(new_middleware, field, object)
   end
 
   def middleware(middleware, _field, _object) do
@@ -76,6 +84,13 @@ defmodule PlateSlateWeb.Schema do
     field :complete_order, :order_result do
       arg(:id, non_null(:id))
       resolve(&Resolvers.Ordering.complete_order/3)
+    end
+
+    field :login, :session do
+      arg(:email, non_null(:string))
+      arg(:password, non_null(:string))
+      arg(:role, non_null(:role))
+      resolve(&Resolvers.Accounts.login/3)
     end
   end
 

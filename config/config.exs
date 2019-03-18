@@ -31,6 +31,10 @@ config :logger, :console,
 
 config :phoenix, :json_library, Jason
 
+config :plate_slate, PlateSlate.Guardian,
+  issuer: "plateSlate",
+  secret_key: "bxx/ZohM7U+g8IHf+44KZfb49/hZa4E948LB53TX3jsnhg/tlRTKs0sYdlGMKK42"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

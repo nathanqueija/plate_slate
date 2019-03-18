@@ -45,7 +45,7 @@ defmodule PlateSlate.Mixfile do
       {:phoenix, "~> 1.4.1"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
-      {:ecto_sql, "~> 3.0"},
+      {:ecto_sql, "~> 3.0.5"},
       {:postgrex, ">= 0.0.0"},
       {:gettext, "~> 0.11"},
       {:plug_cowboy, "~> 2.0.1"},
@@ -54,7 +54,10 @@ defmodule PlateSlate.Mixfile do
       {:absinthe_phoenix, "~> 1.4.0"},
       {:absinthe_relay, "~> 1.4.0"},
       {:jason, "~> 1.0"},
-      {:decimal, "~> 1.0"}
+      {:decimal, "~> 1.0"},
+      {:comeonin, "~> 5.1.1"},
+      {:bcrypt_elixir, "~> 2.0"},
+      {:guardian, "~> 1.0"}
     ]
   end
 
