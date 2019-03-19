@@ -32,6 +32,18 @@ defmodule PlateSlate.Accounts do
     end
   end
 
+  def verify(token) do
+    with {:ok, claims} = Guardian.decode_and_verify(token) do
+      {:ok, claims}
+    else
+      _ -> :error
+    end
+  end
+
+  def lookup(id) do
+    Repo.get_by(User, id: id)
+  end
+
   defp verify_password(_, _) do
     :error
   end
